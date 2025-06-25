@@ -1,6 +1,6 @@
 # Ignore everything by default
 *
-# But keep this file
 !.gitignore
-# And keep the production bundle
 !shipped_engine/**
+!requirements.txt
+!Dockerfile
