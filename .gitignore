@@ -4,3 +4,5 @@
 !shipped_engine/**
 !requirements.txt
 !Dockerfile
+!requirements.txt
+!.python-version
