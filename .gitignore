@@ -6,3 +6,4 @@
 !Dockerfile
 !requirements.txt
 !.python-version
+!runtime.txt
