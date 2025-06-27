@@ -3,3 +3,6 @@ port = 8501
 enableXsrfProtection = false       # inside container
 headless = true
 enableCORS = false
+
+[experimental]
+auth = true 
