@@ -1,9 +1,9 @@
 # Ignore everything by default
 *
 !.gitignore
+!.streamlit/**          # ← keep Streamlit config (new line)
 !shipped_engine/**
 !requirements.txt
 !Dockerfile
-!requirements.txt
 !.python-version
 !runtime.txt
