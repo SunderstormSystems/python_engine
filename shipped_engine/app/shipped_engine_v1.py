@@ -9,6 +9,8 @@ CSV Visualiser — multi‑file robust version
 • Click ▶️ Run code  → snippet executes on the server in a minimal sandbox.
 • If the snippet sets a variable named `fig`, an interactive HTML download button appears.
 """
+# Requires Google OAuth secrets in .streamlit/secrets.toml
+# (see README for the expected [auth] block)
 
 import base64
 from pathlib import Path
@@ -83,33 +85,39 @@ st.set_page_config(page_title="CSV Visualiser", layout="wide")
 st.title("📊 CSV Visualiser — multi‑file")
 st.subheader("Sunderstorm DevTools 🔧")
 
+# ── Authentication (Google OAuth) ────────────────────────────────────
+if not st.user.is_logged_in:
+    st.markdown("## 🔐 Private application")
+    st.write("Please log in with Google to continue.")
+    st.button("Log in with Google", on_click=st.login, type="primary")
+    st.stop()  # halt script until authenticated
+else:
+    with st.sidebar:
+        st.success(f"Signed in as **{st.user.name}**")
+        if st.button("Log out"):
+            st.logout()
+            st.stop()
+
 # ── Main‑page help expander ───────────────────────────────────────
 with st.expander("🤓 How to use this tool", expanded=False):
     st.markdown(
         """
-**Step 1 – Upload your data**  
-Drag one or more **CSV** files into *Upload*. A quick preview appears so you know the file was read.
+**Step 1 – Upload CSV files**  
+Drag one or more files into **Upload**. You’ll see a quick preview.
 
 **Step 2 – Paste your Python snippet**  
-Copy the code that ChatGPT, Claude, or your own notebook gives you.
+Add the *Prompt Template* below into ChatGPT or Claude in addition to your main query, then paste the **code** it gives you here.
 
-Good practice:
+**Step 3 – Save and share**  
+After you run the code and done analyzing the output, click **💾 Save to Projects** to snapshot the code and data.
 
-* Your combined data is already in **`df_all`**.  
-* Each individual upload is **`df_<file‑name‑stem>`** and also lives in **`dfs["file.csv"]`**.  
-* Show a chart with **`st.plotly_chart(fig, use_container_width=True)`**, or for Altair use **`st.altair_chart(chart, use_container_width=True)`**.  
-* Skip frameworks such as Dash, and avoid any command that opens files or makes internet calls.
+**Step 4 – Re‑open later**  
+Go to the **Projects** tab to reload or delete saved snapshots.
 
-**Step 3 – Save and share a project**  
-After you run the code, click **💾 Save to Projects** below the chart.  
-Enter your name and a project title; the tool takes a snapshot (code + data) and stores it in our shared workspace.
+**Tip – Reset workspace**  
+Click **🔄 Reset workspace** (top‑left of the page) any time you want to clear uploads, code, and start fresh.
 
-**Step 4 – Re‑open a project**  
-Open the **Projects** tab (left sidebar). Every saved snapshot is listed for all team members:  
-* **Load** — brings the code and data back into *Workspace* where you can tweak or re‑run it.  
-* **🗑️** — prompts for confirmation, then removes the snapshot for everyone.
-
-**Template request for your AI assistant**
+**Prompt template for your AI assistant**
 
 > *“Write Streamlit‑ready Python that assumes a dataframe named **df_all** is already loaded in memory. Build an interactive Plotly (or Altair) figure, then display it with `st.plotly_chart(fig, use_container_width=True)`. Use only pandas, numpy, plotly, or altair, and do not include Dash or any file‑I/O or network code.”*
 """
