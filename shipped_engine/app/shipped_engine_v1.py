@@ -1,5 +1,5 @@
 """
-CSV Visualiser — multi‑file robust version
+FlashDash – CSV Visualizer — multi‑file
 =========================================
 
 • Upload one or many CSVs  → instant preview per file.
@@ -81,8 +81,8 @@ if st.session_state.get("goto_workspace"):
     st.session_state.pop("goto_workspace")
 
 # ── Page setup ───────────────────────────────────────────────────────────────
-st.set_page_config(page_title="CSV Visualiser", layout="wide")
-st.title("📊 CSV Visualiser — multi‑file")
+st.set_page_config(page_title="FlashDash – CSV Visualizer", layout="wide")
+st.title("📊 FlashDash – CSV Visualizer")
 st.subheader("Sunderstorm DevTools 🔧")
 
 # ── Authentication (Google OAuth) ────────────────────────────────────
@@ -148,6 +148,8 @@ def _zip_project(author: str, name: str, snippet: str, data_map: dict) -> bytes:
 
 
 def save_project_s3(author: str, name: str, snippet: str, data_map: dict) -> None:
+    author = author.strip()
+    name = name.strip()
     project_id = str(uuid.uuid4())
     zip_key = f"projects/{project_id}.zip"
     meta_key = f"index/{project_id}.json"
@@ -215,6 +217,8 @@ def list_projects_s3() -> list[dict]:
             meta = json.loads(
                 s3.get_object(Bucket=S3_BUCKET, Key=obj["Key"])["Body"].read()
             )
+            meta["author"] = meta.get("author", "").strip()
+            meta["name"] = meta.get("name", "").strip()
             project_id = Path(obj["Key"]).stem
             zip_key = f"projects/{project_id}.zip"
             projects.append({"key": zip_key, **meta})
@@ -454,8 +458,8 @@ if page == "Workspace":
                         st.warning("Please fill in both fields.")
                     else:
                         save_project_s3(
-                            author_ws,
-                            proj_ws,
+                            author_ws.strip(),
+                            proj_ws.strip(),
                             st.session_state["snippet"],
                             st.session_state["data_map"],
                         )
